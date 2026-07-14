@@ -112,6 +112,9 @@
               <option value="oldest">Sort: oldest accounts</option>
               <option value="name">Sort: name</option>
             </select>
+            <select id="flag">
+              <option value="">Any flag</option>
+            </select>
             <label class="range"
               >Min risk
               <input type="range" id="minRisk" min="0" max="100" value="0" />
@@ -146,6 +149,9 @@
             <div class="spacer"></div>
             <button type="button" class="btn" id="btnSelectHigh">
               Select high risk (≥55)
+            </button>
+            <button type="button" class="btn" id="btnSelectFlag">
+              Select by flag
             </button>
             <button type="button" class="btn" id="btnSelectPage">
               Select page

@@ -87,6 +87,7 @@
         minFollowRatio: has("minFollowRatio")
           ? Number($("minFollowRatio").value) || 0
           : 0,
+        flag: has("flag") ? $("flag").value : "",
       };
     }
 
@@ -622,6 +623,33 @@
       refresh();
     });
 
+    on("btnSelectFlag", "click", async () => {
+      const flag = has("flag") ? $("flag").value : "";
+      if (!flag) {
+        alert("Select a flag from the filter dropdown first.");
+        return;
+      }
+      const tab = await getXTab();
+      let items = [];
+      if (tab) {
+        const res = await send(tab.id, {
+          type: "XFC_GET_FOLLOWERS",
+          filters: { ...filtersFromUI(), flag },
+          sort: "risk",
+          offset: 0,
+          limit: 10000,
+        });
+        items = res?.items || [];
+      }
+      if (!items.length) {
+        const all = await loadAllForExport();
+        items = scoring.filterFollowers(all, { ...filtersFromUI(), flag });
+      }
+      for (const u of items) state.selected.add(u.id);
+      updateSelectedCount();
+      refresh();
+    });
+
     on("btnSelectPage", "click", () => {
       document.querySelectorAll(".sel").forEach((cb) => {
         cb.checked = true;
@@ -689,6 +717,7 @@
       "q",
       "category",
       "sort",
+      "flag",
       "fNoPosts",
       "fDefaultAvatar",
       "fUnverified",
@@ -754,10 +783,28 @@
       if (msg?.type === C.MSG.STATE) refresh();
     });
 
+    function renderFlagFilter() {
+      if (!has("flag") || !scoring.FLAG_META) return;
+      const sel = $("flag");
+      const current = sel.value;
+      sel.innerHTML = '<option value="">Any flag</option>';
+      const entries = Object.entries(scoring.FLAG_META).sort((a, b) =>
+        a[1].label.localeCompare(b[1].label),
+      );
+      for (const [id, meta] of entries) {
+        const opt = document.createElement("option");
+        opt.value = id;
+        opt.textContent = meta.label;
+        sel.appendChild(opt);
+      }
+      sel.value = current;
+    }
+
     chrome.storage.onChanged.addListener((changes, area) => {
       if (area === "local" && changes[C.STORAGE_KEY]) refresh();
     });
 
+    renderFlagFilter();
     refresh();
     setInterval(refresh, isDash ? 2500 : 4000);
   }
