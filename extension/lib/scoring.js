@@ -493,19 +493,22 @@
     }
 
     // --- Ratios ---
+    let followRatio = null; // following / followers
+    let followerRatio = null; // followers / following
     if (followers != null && following != null) {
-      const ratio =
+      followRatio =
         followers > 0 ? following / Math.max(followers, 1) : following;
+      followerRatio = following > 0 ? followers / following : followers;
       const ratioTxt =
-        followers > 0 ? `ratio ${ratio.toFixed(1)}` : "no followers";
+        followers > 0 ? `ratio ${followRatio.toFixed(1)}` : "no followers";
 
       if (followers === 0 && following > 100) {
         add("zero_followers", 16, `Following ${following}`);
-      } else if (ratio > (opts.maxFollowingRatio || 50)) {
+      } else if (followRatio > (opts.maxFollowingRatio || 50)) {
         add("extreme_following_ratio", 14, ratioTxt);
-      } else if (ratio > 20) {
+      } else if (followRatio > 20) {
         add("high_following_ratio", 9, ratioTxt);
-      } else if (ratio > 10) {
+      } else if (followRatio > 10) {
         add("elevated_following_ratio", 4, ratioTxt);
       }
 
@@ -644,6 +647,8 @@
       category,
       contributions,
       explanation,
+      followRatio,
+      followerRatio,
     };
   }
 
@@ -840,6 +845,16 @@
       if (f.minFollowers != null && (u.followersCount || 0) < f.minFollowers)
         return false;
       if (f.maxFollowers != null && (u.followersCount || 0) > f.maxFollowers)
+        return false;
+      if (
+        f.minFollowRatio != null &&
+        (u.followRatio ?? 0) < f.minFollowRatio
+      )
+        return false;
+      if (
+        f.maxFollowRatio != null &&
+        (u.followRatio ?? 0) > f.maxFollowRatio
+      )
         return false;
       return true;
     });

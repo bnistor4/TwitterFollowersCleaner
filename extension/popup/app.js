@@ -81,7 +81,14 @@
           : false,
         onlyUnverified: has("fUnverified") ? $("fUnverified").checked : false,
         minRisk: has("minRisk") ? Number($("minRisk").value) || 0 : 0,
+        minFollowRatio: has("minFollowRatio")
+          ? Number($("minFollowRatio").value) || 0
+          : 0,
       };
+    }
+
+    function followRatio(u) {
+      return u.followRatio ?? u.followingCount / Math.max(u.followersCount || 1, 1);
     }
 
     function sortList(list, sort) {
@@ -90,6 +97,8 @@
         arr.sort((a, b) => (b.riskScore || 0) - (a.riskScore || 0));
       else if (sort === "followers")
         arr.sort((a, b) => (b.followersCount || 0) - (a.followersCount || 0));
+      else if (sort === "ratio")
+        arr.sort((a, b) => followRatio(b) - followRatio(a));
       else if (sort === "newest")
         arr.sort(
           (a, b) => Date.parse(b.createdAt || 0) - Date.parse(a.createdAt || 0),
@@ -268,16 +277,19 @@
               : age < 30
                 ? age + "d"
                 : Math.floor(age / 30) + "mo";
+          const ratio = followRatio(u);
+          const ratioLabel = ratio > 0 ? `${ratio.toFixed(1)}x` : "—";
           const statsCol = isDash
             ? `<div class="stats-col">
                 <div>${fmt(u.followersCount)} followers</div>
                 <div>${fmt(u.followingCount)} following</div>
+                <div>${ratioLabel} follow ratio</div>
                 <div>${fmt(u.statusesCount)} posts · ${ageLabel}</div>
               </div>`
             : "";
           const statsLine = isDash
             ? ""
-            : `<div class="stats-line">${fmt(u.followersCount)} followers · ${fmt(u.followingCount)} following · ${fmt(u.statusesCount)} posts · age ${ageLabel}</div>`;
+            : `<div class="stats-line">${fmt(u.followersCount)} followers · ${fmt(u.followingCount)} following · ${ratioLabel} follow ratio · ${fmt(u.statusesCount)} posts · age ${ageLabel}</div>`;
           const explanation =
             isDash && u.explanation
               ? `<div class="explanation">${escapeHtml(u.explanation)}</div>`
@@ -697,6 +709,15 @@
       if (has("minRiskVal")) $("minRiskVal").textContent = $("minRisk").value;
     });
     on("minRisk", "change", () => {
+      state.offset = 0;
+      refresh();
+    });
+
+    on("minFollowRatio", "input", () => {
+      if (has("minFollowRatioVal"))
+        $("minFollowRatioVal").textContent = $("minFollowRatio").value;
+    });
+    on("minFollowRatio", "change", () => {
       state.offset = 0;
       refresh();
     });

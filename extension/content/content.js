@@ -1085,6 +1085,16 @@
         list.sort((a, b) => (b.riskScore || 0) - (a.riskScore || 0));
       else if (msg.sort === "followers")
         list.sort((a, b) => (b.followersCount || 0) - (a.followersCount || 0));
+      else if (msg.sort === "ratio")
+        list.sort((a, b) => {
+          const ra =
+            a.followRatio ??
+            a.followingCount / Math.max(a.followersCount || 1, 1);
+          const rb =
+            b.followRatio ??
+            b.followingCount / Math.max(b.followersCount || 1, 1);
+          return rb - ra;
+        });
       else if (msg.sort === "newest")
         list.sort(
           (a, b) => Date.parse(b.createdAt || 0) - Date.parse(a.createdAt || 0),

@@ -105,6 +105,7 @@
             </select>
             <select id="sort">
               <option value="risk">Sort: risk</option>
+              <option value="ratio">Sort: follow ratio</option>
               <option value="posts">Sort: fewest posts</option>
               <option value="followers">Sort: followers</option>
               <option value="newest">Sort: newest accounts</option>
@@ -115,6 +116,17 @@
               >Min risk
               <input type="range" id="minRisk" min="0" max="100" value="0" />
               <span id="minRiskVal">0</span>
+            </label>
+            <label class="range"
+              >Min follow ratio
+              <input
+                type="range"
+                id="minFollowRatio"
+                min="0"
+                max="100"
+                value="0"
+              />
+              <span id="minFollowRatioVal">0</span>
             </label>
           </div>
           <div class="filters-bar checks">
