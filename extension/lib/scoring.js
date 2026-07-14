@@ -150,6 +150,10 @@
       label: "Partial data",
       detail: "Scored from visible UI only (counts incomplete)",
     },
+    banned_words: {
+      label: "Banned keyword(s)",
+      detail: "Name, handle or bio contains forbidden terms",
+    },
   };
 
   const SUSPICIOUS_BIO = [
@@ -192,6 +196,38 @@
     /^[a-z0-9]{12,}$/i, // long random alphanumeric
     /\d{4,}[a-z]{1,3}\d{3,}/i,
   ];
+
+  // Forbidden terms in name, handle or bio. Extend this list as needed.
+  const BANNED_WORDS = [
+    "porn", "porno", "pornography",
+    "xxx",
+    "sex", "sext", "sexchat", "sex chat",
+    "nude", "nudes", "naked",
+    "sexy",
+    "escort", "escorts", "prostitute", "hooker",
+    "camgirl", "cam girl", "camgirls",
+    "onlyfans", "fansly",
+    "nsfw", "adult content", "adult",
+    "hot girl", "hot girls",
+    "fetish",
+    "call girl", "call girls",
+    "sugar baby", "sugardaddy", "sugar daddy", "sugar mommy",
+    "buy nudes", "nude pics", "private snap",
+  ];
+
+  function escapeRegExp(string) {
+    return string.replace(/[.*+?^${}()|[\]\\\\]/g, "\\$&");
+  }
+
+  function countBannedWords(text) {
+    const t = (text || "").toLowerCase();
+    let matches = 0;
+    for (const word of BANNED_WORDS) {
+      const re = new RegExp("\\b" + escapeRegExp(word) + "\\b", "i");
+      if (re.test(t)) matches++;
+    }
+    return matches;
+  }
 
   const SCORE_RULES_DOC = [
     {
@@ -309,6 +345,11 @@
           flag: "emoji_spam_name",
           points: "+8",
           when: "promotional emoji spam in name",
+        },
+        {
+          flag: "banned_words",
+          points: "+15 to +40",
+          when: "name, handle or bio contains forbidden terms",
         },
       ],
     },
@@ -566,6 +607,14 @@
     const emojiN = countPromoEmoji(name);
     if (emojiN >= 3) {
       add("emoji_spam_name", 8, `${emojiN} promo emoji`);
+    }
+
+    // --- Banned / forbidden keywords (name, handle, bio) ---
+    const combinedText = `${name} ${handle} ${bio}`;
+    const bannedWordHits = countBannedWords(combinedText);
+    if (bannedWordHits > 0) {
+      const pts = Math.min(40, 15 + bannedWordHits * 5);
+      add("banned_words", pts, `${bannedWordHits} forbidden term(s)`);
     }
 
     // --- Soft signals ---
