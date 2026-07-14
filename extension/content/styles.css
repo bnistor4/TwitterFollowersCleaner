@@ -1,0 +1,152 @@
+#xfc-panel {
+  position: fixed;
+  right: 16px;
+  bottom: 16px;
+  width: 300px;
+  z-index: 2147483646;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  color: #e7e9ea;
+  background: rgba(15, 20, 25, 0.94);
+  border: 1px solid #2f3336;
+  border-radius: 16px;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(12px);
+  overflow: hidden;
+  user-select: none;
+}
+
+#xfc-panel.xfc-collapsed .xfc-body {
+  display: none;
+}
+
+#xfc-panel .xfc-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 12px;
+  background: linear-gradient(90deg, #1d9bf0 0%, #7856ff 100%);
+  cursor: grab;
+}
+
+#xfc-panel .xfc-title {
+  font-weight: 700;
+  font-size: 13px;
+  letter-spacing: 0.02em;
+  color: #fff;
+}
+
+#xfc-panel .xfc-icon-btn {
+  border: 0;
+  background: rgba(255, 255, 255, 0.18);
+  color: #fff;
+  width: 26px;
+  height: 26px;
+  border-radius: 999px;
+  cursor: pointer;
+  font-size: 12px;
+  line-height: 1;
+}
+
+#xfc-panel .xfc-body {
+  padding: 12px;
+}
+
+#xfc-panel .xfc-mode {
+  font-size: 11px;
+  color: #71767b;
+  margin-bottom: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+#xfc-panel .xfc-stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+#xfc-panel .xfc-stats > div {
+  background: #16181c;
+  border: 1px solid #2f3336;
+  border-radius: 12px;
+  padding: 8px 10px;
+}
+
+#xfc-panel .xfc-stats span {
+  display: block;
+  font-size: 18px;
+  font-weight: 700;
+  color: #e7e9ea;
+}
+
+#xfc-panel .xfc-stats label {
+  font-size: 10px;
+  color: #71767b;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+#xfc-panel .xfc-actions {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+#xfc-panel .xfc-btn {
+  flex: 1;
+  border: 1px solid #536471;
+  background: transparent;
+  color: #e7e9ea;
+  border-radius: 999px;
+  padding: 8px 10px;
+  font-size: 12px;
+  font-weight: 650;
+  cursor: pointer;
+}
+
+#xfc-panel .xfc-btn.primary {
+  background: #e7e9ea;
+  color: #0f1419;
+  border-color: transparent;
+}
+
+#xfc-panel .xfc-btn.danger {
+  background: #f4212e;
+  color: #fff;
+  border-color: transparent;
+}
+
+#xfc-panel .xfc-btn:hover {
+  filter: brightness(1.08);
+}
+
+#xfc-panel .xfc-hint {
+  margin: 0;
+  font-size: 11px;
+  line-height: 1.4;
+  color: #8b98a5;
+}
+
+#xfc-toast {
+  position: fixed;
+  left: 50%;
+  bottom: 24px;
+  transform: translateX(-50%) translateY(20px);
+  background: #1d9bf0;
+  color: #fff;
+  padding: 10px 16px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 600;
+  z-index: 2147483647;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s, transform 0.2s;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+#xfc-toast.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}

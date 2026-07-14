@@ -1,0 +1,48 @@
+{
+  "manifest_version": 3,
+  "name": "X Followers Cleaner",
+  "version": "1.2.0",
+  "description": "Analyze, score, and clean low-quality or spam followers on X (Twitter). Filter by activity, age, spam signals, and more.",
+  "permissions": ["storage", "activeTab", "downloads", "scripting", "tabs"],
+  "host_permissions": ["*://x.com/*", "*://twitter.com/*"],
+  "background": {
+    "service_worker": "background/service-worker.js"
+  },
+  "action": {
+    "default_title": "X Followers Cleaner — open full dashboard",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
+  },
+  "options_ui": {
+    "page": "dashboard/dashboard.html",
+    "open_in_tab": true
+  },
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "content_scripts": [
+    {
+      "matches": ["*://x.com/*", "*://twitter.com/*"],
+      "js": ["content/interceptor.js"],
+      "run_at": "document_start",
+      "world": "MAIN"
+    },
+    {
+      "matches": ["*://x.com/*", "*://twitter.com/*"],
+      "js": ["lib/constants.js", "lib/scoring.js", "content/content.js"],
+      "css": ["content/styles.css"],
+      "run_at": "document_idle"
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": ["lib/*", "content/*"],
+      "matches": ["*://x.com/*", "*://twitter.com/*"]
+    }
+  ]
+}

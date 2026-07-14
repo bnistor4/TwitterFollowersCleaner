@@ -1,0 +1,50 @@
+# Local environment / secrets
+.env
+.env.*
+*.local
+*.key
+*.pem
+*.secret
+secrets/
+
+# Editor/OS metadata
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# Dependency artifacts
+node_modules/
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# Build/output
+build/
+dist/
+out/
+*.zip
+*.crx
+
+# Logs
+*.log
+logs/
+
+# Testing / coverage
+coverage/
+.nyc_output/
+
+# Cursor / Codeium / Windsurf / Devin local config
+**/.cursor/
+**/.codeium/
+**/.windsurf/
+**/.devin/
+**/.agents/
+**/config.local.json
+
+# Chrome extension temporary files
+extension.crx
+extension.pem
+update.xml

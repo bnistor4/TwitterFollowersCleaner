@@ -1,0 +1,213 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>X Followers Cleaner — Dashboard</title>
+    <link rel="stylesheet" href="dashboard.css" />
+  </head>
+  <body class="dashboard">
+    <div class="shell">
+      <aside class="sidebar">
+        <div class="brand">
+          <div class="logo"></div>
+          <div>
+            <h1>Followers Cleaner</h1>
+            <p class="brand-sub">X account hygiene</p>
+          </div>
+        </div>
+
+        <div class="status-card">
+          <div class="status-dot" id="statusDot"></div>
+          <div>
+            <div class="status-title" id="statusTitle">Looking for X tab…</div>
+            <div class="status-sub" id="statusLine">Open x.com/…/followers</div>
+          </div>
+        </div>
+
+        <div class="summary-grid" id="summary">
+          <div class="chip">
+            <strong id="sTotal">0</strong><span>Total</span>
+          </div>
+          <div class="chip crit">
+            <strong id="sCrit">0</strong><span>Critical</span>
+          </div>
+          <div class="chip high">
+            <strong id="sHigh">0</strong><span>High</span>
+          </div>
+          <div class="chip med">
+            <strong id="sMed">0</strong><span>Medium</span>
+          </div>
+          <div class="chip low">
+            <strong id="sLow">0</strong><span>Low</span>
+          </div>
+          <div class="chip">
+            <strong id="sNoPosts">0</strong><span>No posts</span>
+          </div>
+          <div class="chip">
+            <strong id="sDefaultAv">0</strong><span>Default av.</span>
+          </div>
+          <div class="chip">
+            <strong id="sAvg">0</strong><span>Avg risk</span>
+          </div>
+        </div>
+
+        <div class="side-actions">
+          <button type="button" class="btn primary block" id="btnScan">
+            Start scan
+          </button>
+          <button type="button" class="btn block" id="btnFocusX">
+            Focus X tab
+          </button>
+          <button type="button" class="btn block" id="btnExportJson">
+            Export JSON
+          </button>
+          <button type="button" class="btn block" id="btnExportCsv">
+            Export CSV
+          </button>
+          <button type="button" class="btn ghost block" id="btnRescore">
+            Re-score all
+          </button>
+          <button
+            type="button"
+            class="btn ghost block danger-text"
+            id="btnClear"
+          >
+            Clear data
+          </button>
+        </div>
+
+        <button type="button" class="btn ghost block" id="btnScoreHelp">
+          How scores work
+        </button>
+
+        <p class="side-hint">
+          Keep the Followers page open while scanning. Click a risk number or
+          expand a row to see exactly which rules produced that score.
+        </p>
+      </aside>
+
+      <main class="main">
+        <header class="main-header">
+          <div class="filters-bar">
+            <input
+              type="search"
+              id="q"
+              placeholder="Search name, @handle, bio…"
+            />
+            <select id="category">
+              <option value="all">All categories</option>
+              <option value="critical">Critical</option>
+              <option value="high_risk">High risk</option>
+              <option value="medium">Medium</option>
+              <option value="inactive">Inactive</option>
+              <option value="ok">OK</option>
+            </select>
+            <select id="sort">
+              <option value="risk">Sort: risk</option>
+              <option value="posts">Sort: fewest posts</option>
+              <option value="followers">Sort: followers</option>
+              <option value="newest">Sort: newest accounts</option>
+              <option value="oldest">Sort: oldest accounts</option>
+              <option value="name">Sort: name</option>
+            </select>
+            <label class="range"
+              >Min risk
+              <input type="range" id="minRisk" min="0" max="100" value="0" />
+              <span id="minRiskVal">0</span>
+            </label>
+          </div>
+          <div class="filters-bar checks">
+            <label class="check"
+              ><input type="checkbox" id="fNoPosts" /> No posts</label
+            >
+            <label class="check"
+              ><input type="checkbox" id="fDefaultAvatar" /> Default
+              avatar</label
+            >
+            <label class="check"
+              ><input type="checkbox" id="fUnverified" /> Unverified only</label
+            >
+            <div class="spacer"></div>
+            <button type="button" class="btn" id="btnSelectHigh">
+              Select high risk (≥55)
+            </button>
+            <button type="button" class="btn" id="btnSelectPage">
+              Select page
+            </button>
+            <button type="button" class="btn" id="btnDeselect">Deselect</button>
+            <button
+              type="button"
+              class="btn danger solid"
+              id="btnRemoveSelected"
+              disabled
+            >
+              Remove selected
+            </button>
+          </div>
+        </header>
+
+        <div class="list-meta">
+          <span id="listCount">0 shown</span>
+          <span id="selectedCount">0 selected</span>
+        </div>
+
+        <div id="list" class="list"></div>
+
+        <footer class="pager">
+          <button type="button" class="btn ghost" id="btnPrev">← Prev</button>
+          <span id="pageInfo">1</span>
+          <button type="button" class="btn ghost" id="btnNext">Next →</button>
+          <select id="pageSize" class="page-size" title="Rows per page">
+            <option value="30">30 / page</option>
+            <option value="50" selected>50 / page</option>
+            <option value="100">100 / page</option>
+            <option value="200">200 / page</option>
+          </select>
+        </footer>
+      </main>
+    </div>
+
+    <!-- Score methodology drawer -->
+    <div class="drawer-backdrop" id="scoreHelpBackdrop" hidden></div>
+    <aside
+      class="drawer"
+      id="scoreHelpDrawer"
+      hidden
+      aria-label="Score methodology"
+    >
+      <div class="drawer-head">
+        <h2>How risk scores are calculated</h2>
+        <button type="button" class="btn ghost" id="btnScoreHelpClose">
+          ✕
+        </button>
+      </div>
+      <div class="drawer-body" id="scoreHelpBody"></div>
+    </aside>
+
+    <!-- Per-user breakdown -->
+    <div class="drawer-backdrop" id="breakdownBackdrop" hidden></div>
+    <aside
+      class="drawer"
+      id="breakdownDrawer"
+      hidden
+      aria-label="User score breakdown"
+    >
+      <div class="drawer-head">
+        <div>
+          <h2 id="breakdownTitle">Score breakdown</h2>
+          <p class="drawer-sub" id="breakdownSub"></p>
+        </div>
+        <button type="button" class="btn ghost" id="btnBreakdownClose">
+          ✕
+        </button>
+      </div>
+      <div class="drawer-body" id="breakdownBody"></div>
+    </aside>
+
+    <script src="../lib/constants.js"></script>
+    <script src="../lib/scoring.js"></script>
+    <script src="../popup/app.js"></script>
+    <script src="dashboard.js"></script>
+  </body>
+</html>

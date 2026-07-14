@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>X Followers Cleaner</title>
+    <link rel="stylesheet" href="popup.css" />
+  </head>
+  <body>
+    <div class="app">
+      <header class="header">
+        <div>
+          <h1>X Followers Cleaner</h1>
+          <p class="sub" id="statusLine">Connect to x.com followers page</p>
+        </div>
+        <div class="header-actions">
+          <button
+            type="button"
+            class="btn primary"
+            id="btnOpenDashboard"
+            title="Full dashboard"
+          >
+            ⛶ Full
+          </button>
+          <button
+            type="button"
+            class="btn ghost"
+            id="btnRescore"
+            title="Re-score"
+          >
+            ↻
+          </button>
+          <button
+            type="button"
+            class="btn ghost"
+            id="btnClear"
+            title="Clear data"
+          >
+            ⌫
+          </button>
+        </div>
+      </header>
+
+      <section class="summary" id="summary">
+        <div class="chip"><strong id="sTotal">0</strong><span>Total</span></div>
+        <div class="chip crit">
+          <strong id="sCrit">0</strong><span>Critical</span>
+        </div>
+        <div class="chip high">
+          <strong id="sHigh">0</strong><span>High</span>
+        </div>
+        <div class="chip med">
+          <strong id="sMed">0</strong><span>Medium</span>
+        </div>
+        <div class="chip low"><strong id="sLow">0</strong><span>Low</span></div>
+        <div class="chip">
+          <strong id="sNoPosts">0</strong><span>No posts</span>
+        </div>
+      </section>
+
+      <section class="toolbar">
+        <div class="row">
+          <button type="button" class="btn primary" id="btnScan">
+            Start scan
+          </button>
+          <button type="button" class="btn" id="btnExportJson">
+            Export JSON
+          </button>
+          <button type="button" class="btn" id="btnExportCsv">
+            Export CSV
+          </button>
+        </div>
+        <div class="row filters">
+          <input
+            type="search"
+            id="q"
+            placeholder="Search name, @handle, bio…"
+          />
+          <select id="category">
+            <option value="all">All categories</option>
+            <option value="critical">Critical</option>
+            <option value="high_risk">High risk</option>
+            <option value="medium">Medium</option>
+            <option value="inactive">Inactive</option>
+            <option value="ok">OK</option>
+          </select>
+          <select id="sort">
+            <option value="risk">Sort: risk</option>
+            <option value="posts">Sort: fewest posts</option>
+            <option value="followers">Sort: followers</option>
+            <option value="newest">Sort: newest accounts</option>
+            <option value="oldest">Sort: oldest accounts</option>
+          </select>
+        </div>
+        <div class="row filters compact">
+          <label class="check"
+            ><input type="checkbox" id="fNoPosts" /> No posts</label
+          >
+          <label class="check"
+            ><input type="checkbox" id="fDefaultAvatar" /> Default avatar</label
+          >
+          <label class="check"
+            ><input type="checkbox" id="fUnverified" /> Unverified only</label
+          >
+          <label class="range"
+            >Min risk
+            <input type="range" id="minRisk" min="0" max="100" value="0" />
+            <span id="minRiskVal">0</span>
+          </label>
+        </div>
+        <div class="row bulk">
+          <button type="button" class="btn danger" id="btnSelectHigh">
+            Select high risk
+          </button>
+          <button type="button" class="btn" id="btnSelectPage">
+            Select page
+          </button>
+          <button type="button" class="btn" id="btnDeselect">Deselect</button>
+          <button
+            type="button"
+            class="btn danger solid"
+            id="btnRemoveSelected"
+            disabled
+          >
+            Remove selected (DOM)
+          </button>
+        </div>
+        <p class="note">
+          Prefer <b>Full</b> dashboard for large lists. Removal uses X’s UI on
+          the open Followers tab.
+        </p>
+      </section>
+
+      <section class="list-wrap">
+        <div class="list-meta">
+          <span id="listCount">0 shown</span>
+          <span id="selectedCount">0 selected</span>
+        </div>
+        <div id="list" class="list"></div>
+        <div class="pager">
+          <button type="button" class="btn ghost" id="btnPrev">Prev</button>
+          <span id="pageInfo">1</span>
+          <button type="button" class="btn ghost" id="btnNext">Next</button>
+        </div>
+      </section>
+    </div>
+    <script src="../lib/constants.js"></script>
+    <script src="../lib/scoring.js"></script>
+    <script src="app.js"></script>
+    <script>
+      XFCApp.mount({ mode: "popup", pageSize: 40 });
+    </script>
+  </body>
+</html>
