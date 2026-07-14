@@ -81,6 +81,62 @@
     }
   });
 
+  function mergeUser(prev, next) {
+    if (!prev) return next;
+    const base = { ...prev };
+    const stringFields = [
+      "description",
+      "name",
+      "screenName",
+      "location",
+      "profileImageUrl",
+    ];
+    const numericFields = [
+      "followersCount",
+      "followingCount",
+      "statusesCount",
+      "favouritesCount",
+      "listedCount",
+      "mediaCount",
+    ];
+    for (const key of Object.keys(next)) {
+      const v = next[key];
+      if (v === undefined || v === null) continue;
+      if (
+        stringFields.includes(key) &&
+        typeof v === "string" &&
+        v.trim() === ""
+      ) {
+        if (base[key] && String(base[key]).trim() !== "") continue;
+      }
+      if (
+        numericFields.includes(key) &&
+        typeof v === "number" &&
+        v === 0 &&
+        base[key] != null &&
+        base[key] !== 0
+      ) {
+        continue;
+      }
+      base[key] = v;
+    }
+    if (next.createdAt) base.createdAt = next.createdAt;
+    if (next.source === "graphql") base.source = "graphql";
+    if (next.countsKnown) base.countsKnown = true;
+    if (scoring) {
+      const scored = scoring.scoreFollower(base);
+      base.riskScore = scored.riskScore;
+      base.qualityScore = scored.qualityScore;
+      base.flags = scored.flags;
+      base.category = scored.category;
+      base.contributions = scored.contributions;
+      base.explanation = scored.explanation;
+      base.followRatio = scored.followRatio;
+      base.followerRatio = scored.followerRatio;
+    }
+    return base;
+  }
+
   function ingestPayload(json, url) {
     if (!json || !scoring) return;
     const users = scoring.extractUsersFromGraphQL(json);
@@ -107,7 +163,7 @@
       if (!u.id) continue;
       const prev = followers.get(u.id);
       if (prev) {
-        followers.set(u.id, { ...prev, ...u, flags: u.flags || prev.flags });
+        followers.set(u.id, mergeUser(prev, u));
       } else {
         followers.set(u.id, u);
         added++;
@@ -274,26 +330,11 @@
             };
         const u = { ...base, ...scored };
         const prev = followers.get(u.id);
-        if (prev && prev.source !== "dom") {
-          followers.set(u.id, {
-            ...u,
-            ...prev,
-            followedBy: prev.followedBy || u.followedBy,
-            name: prev.name || u.name,
-            description: prev.description || u.description,
-            profileImageUrl: prev.profileImageUrl || u.profileImageUrl,
-          });
-        } else if (!prev) {
+        if (prev) {
+          followers.set(u.id, mergeUser(prev, u));
+        } else {
           followers.set(u.id, u);
           added++;
-        } else {
-          followers.set(u.id, {
-            ...prev,
-            ...u,
-            riskScore: scored.riskScore,
-            flags: scored.flags,
-            category: scored.category,
-          });
         }
       } catch (_) {}
     }
