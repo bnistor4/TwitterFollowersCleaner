@@ -80,6 +80,9 @@
           ? $("fDefaultAvatar").checked
           : false,
         onlyUnverified: has("fUnverified") ? $("fUnverified").checked : false,
+        onlyMassFollowing: has("fMassFollowing")
+          ? $("fMassFollowing").checked
+          : false,
         minRisk: has("minRisk") ? Number($("minRisk").value) || 0 : 0,
         minFollowRatio: has("minFollowRatio")
           ? Number($("minFollowRatio").value) || 0
@@ -689,6 +692,7 @@
       "fNoPosts",
       "fDefaultAvatar",
       "fUnverified",
+      "fMassFollowing",
     ].forEach((id) => {
       on(id, "change", () => {
         state.offset = 0;

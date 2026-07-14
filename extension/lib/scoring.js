@@ -890,6 +890,7 @@
       }
       if (f.onlyNoPosts && (u.statusesCount || 0) > 0) return false;
       if (f.onlyUnverified && (u.verified || u.isBlueVerified)) return false;
+      if (f.onlyMassFollowing && (u.followingCount || 0) <= 2000) return false;
       if (f.flag && !(u.flags || []).includes(f.flag)) return false;
       if (f.minFollowers != null && (u.followersCount || 0) < f.minFollowers)
         return false;
