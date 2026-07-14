@@ -121,8 +121,14 @@
       base[key] = v;
     }
     if (next.createdAt) base.createdAt = next.createdAt;
-    if (next.source === "graphql") base.source = "graphql";
-    if (next.countsKnown) base.countsKnown = true;
+    // Never downgrade a graphql record (which has real counts) to a dom row.
+    if (next.source === "graphql") {
+      base.source = "graphql";
+    } else if (base.source !== "graphql" && next.source) {
+      base.source = next.source;
+    }
+    if (next.countsKnown || base.source === "graphql")
+      base.countsKnown = true;
     if (scoring) {
       const scored = scoring.scoreFollower(base);
       base.riskScore = scored.riskScore;
@@ -201,7 +207,20 @@
     chrome.storage.local.get([C.STORAGE_KEY], (res) => {
       const arr = res[C.STORAGE_KEY] || [];
       for (const u of arr) {
-        if (u && u.id) followers.set(u.id, u);
+        if (u && u.id) {
+          // If we have real counts but the record was marked dom, allow scoring to use them.
+          if (
+            u.source === "dom" &&
+            ((u.followersCount || 0) > 0 || (u.followingCount || 0) > 0)
+          ) {
+            u.countsKnown = true;
+          }
+          if (scoring) {
+            const scored = scoring.scoreFollower(u);
+            Object.assign(u, scored);
+          }
+          followers.set(u.id, u);
+        }
       }
       updatePanelStats();
       notifyPopup();
